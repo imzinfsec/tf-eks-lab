@@ -12,8 +12,8 @@ data "aws_caller_identity" "current" {}
 # GitHub OIDC Provider
 # AWS가 GitHub에서 발급한 JWT 토큰을 신뢰하도록 등록
 resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
   thumbprint_list = [
     "6938fd4d98bab03faadb97b34396831e3780aea1",
     "1c58a3a8518e8759bf075b76b750d4f2df264fcd"
@@ -49,8 +49,34 @@ resource "aws_iam_role_policy_attachment" "admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-variable "github_org"  { description = "GitHub 사용자명 또는 조직명" }
+variable "github_org" { description = "GitHub 사용자명 또는 조직명" }
 variable "github_repo" { description = "GitHub 저장소명" }
 
-output "role_arn"       { value = aws_iam_role.github_actions.arn }
+output "role_arn" { value = aws_iam_role.github_actions.arn }
 output "aws_account_id" { value = data.aws_caller_identity.current.account_id }
+
+
+# cd terraform/iam-oidc
+
+# terraform init
+# # 출력: Terraform has been successfully initialized!
+
+# # GitHub 사용자명 확인
+# GITHUB_USER=$(gh api user -q .login)
+# echo "GitHub 사용자명: $GITHUB_USER"
+
+# terraform plan \
+#   -var="github_org=${GITHUB_USER}" \
+#   -var="github_repo=tf-eks-lab"
+# # 출력: Plan: 3 to add, 0 to change, 0 to destroy.
+
+#  terraform apply -auto-approve \
+#    -var="github_org=${GITHUB_USER}" \
+#    -var="github_repo=tf-eks-lab"
+
+# 🎯 조직명, 레포 변수까지 쥐여주고 OIDC 공급자 완벽하게 가져오기!
+# terraform import \
+#   -var="github_org=${GITHUB_USER}" \
+#   -var="github_repo=tf-eks-lab" \
+#   aws_iam_openid_connect_provider.github \
+#   arn:aws:iam::003493200358:oidc-provider/token.actions.githubusercontent.com

@@ -7,7 +7,7 @@ terraform {
 }
 provider "aws" { region = "ap-northeast-2" }
 
-# 파이프라인 테스트용 변수 (실제 리소스 미생성)
+# 파이프라인 테스트용 변수 (실제 리소스 미생성))
 variable "test_tag" {
   description = "CI/CD 파이프라인 테스트용2"
   default     = "cicd-lab-test"
